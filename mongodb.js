@@ -9,6 +9,10 @@ export const schema = mongoose.Schema({
     type: String,
     required: true,
   },
+  time: {
+    type: String,
+    required: false,
+  },
 });
 
 export const model = mongoose.model("pasteque", schema);
