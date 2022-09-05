@@ -41,6 +41,7 @@ const searchLimit = rateLimit({
 });
 
 app.post("/v1/create", createLimit, async (req, res) => {
+  var maxTextLength = 10240;
   const text = req.body.text;
   const id = nanoid();
   const findExistingText = await mongodb.findOne({ text: text });
@@ -48,7 +49,7 @@ app.post("/v1/create", createLimit, async (req, res) => {
   if (text === undefined || text.length === 0) {
     res.status(400).send({ message: "No text entered." });
   } else {
-    if (text.length < 2048) {
+    if (text.length < maxTextLength) {
       if (findExistingText === null) {
         try {
           const db = new mongodb({ text: text, id: id, time: time });
@@ -65,7 +66,9 @@ app.post("/v1/create", createLimit, async (req, res) => {
         log(`Redirect Slice: ${text}, id: ${id}`);
       }
     } else {
-      res.status(400).send({ message: "Text too long, over 2048 characters" });
+      res
+        .status(400)
+        .send({ message: `Text too long, over ${maxTextLength} characters` });
     }
   }
 });
